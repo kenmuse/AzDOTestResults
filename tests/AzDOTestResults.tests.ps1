@@ -48,10 +48,10 @@ InModuleScope $moduleName {
                     Content = '{"value":"Value" }'
                 }
             }
-		
+
             $result = Get-TestRunList -BuildUri 'nnn' -BaseUri 'urn://ne' -AccessToken '1234'
 
-            It "Should automatically include  JSON content type" {	
+            It "Should automatically include  JSON content type" {
                 Assert-MockCalled Invoke-WebRequest -ParameterFilter { $Headers.Item('Accept') -eq 'application/json' } -Exactly -Times 1 -Scope Context
             }
 
@@ -72,10 +72,10 @@ InModuleScope $moduleName {
                     Content = '{"value":"Value" }'
                 }
             }
-		
-            $result = Get-TestAttachmentList -TestUri 'urn://ne' -AccessToken '1234'
 
-            It "Should automatically include  JSON content type" {	
+            [void](Get-TestAttachmentList -TestUri 'urn://ne' -AccessToken '1234')
+
+            It "Should automatically include  JSON content type" {
                 Assert-MockCalled Invoke-WebRequest -ParameterFilter { $Headers.Item('Accept') -eq 'application/json' } -Exactly -Times 1 -Scope Context
             }
 
@@ -115,7 +115,7 @@ InModuleScope $moduleName {
     Describe "Get-TrxContent" {
 
 		Context "Given a TRX file containing two coverage files" {
-            
+
             $trxFiles = @(
                 @{
                     fileName = 'simple file.trx'
@@ -127,12 +127,12 @@ InModuleScope $moduleName {
 
             Mock -CommandName Get-TrxAttachmentList -Verifiable -MockWith {
                 @(
-                    'agent\DeplRoot_agent 2019-08-25 05_47_09.coverage',
-                    'agent\DeplRoot_agent 2019-08-25 05_47_10.coverage'
+                    ('agent{0}DeplRoot_agent 2019-08-25 05_47_09.coverage' -f [IO.Path]::DirectorySeparatorChar),
+                    ('agent{0}DeplRoot_agent 2019-08-25 05_47_10.coverage' -f [IO.Path]::DirectorySeparatorChar)
                 )
             }
-            
-            $results = Get-TrxContent -Files $trxFiles -OutputFolder 'x:/root'
+
+            $results = Get-TrxContent -Files $trxFiles -OutputFolder '/root'
             $results | Format-List
 
 			It "Should not have null results" {
@@ -144,11 +144,11 @@ InModuleScope $moduleName {
 			}
 
 			It "Should map the 09 coverage file correctly" {
-				$results | Should Contain ([Path]::GetFullPath('x:/root/simple_file/In/agent/DeplRoot_agent 2019-08-25 05_47_09.coverage'))
+				$results | Should Contain ([Path]::GetFullPath('/root/simple_file/In/agent/DeplRoot_agent 2019-08-25 05_47_09.coverage'))
             }
-            
+
             It "Should map the 10 coverage file correctly" {
-				$results | Should Contain ([Path]::GetFullPath('x:/root/simple_file/In/agent/DeplRoot_agent 2019-08-25 05_47_10.coverage'))
+				$results | Should Contain ([Path]::GetFullPath('/root/simple_file/In/agent/DeplRoot_agent 2019-08-25 05_47_10.coverage'))
             }
 		}
     }
@@ -223,7 +223,7 @@ InModuleScope $moduleName {
 
             $trx = "$samplesRoot/SampleWithoutFolder.trx"
             $results = Get-TrxAttachmentList -FilePath $trx
-            
+
             It "Should correctly count the nodes" {
                 ($results | Measure).Count | Should Be 1
             }
@@ -251,10 +251,10 @@ InModuleScope $moduleName {
                     Content = '{"value":"Value" }'
                 }
             }
-		
+
             $result = Get-TestAttachment -AttachmentUri 'urn://ne' -AccessToken '1234' -OutputPath New-TemporaryFile.FullName
 
-            It "Should not include JSON content type" {	
+            It "Should not include JSON content type" {
                 Assert-MockCalled Invoke-WebRequest -ParameterFilter { $Headers.Item('Accept') -eq 'application/json' } -Exactly -Times 0 -Scope Context
             }
 
@@ -279,16 +279,16 @@ Describe 'Script Analyzer Rules' {
             { Get-Command Invoke-ScriptAnalyzer -ErrorAction Stop } | Should Not Throw
         }
     }
- 
+
     $scriptAnalyzerRules = Get-ScriptAnalyzerRule
- 
+
     forEach ($scriptModule in $scriptsModules) {
         switch -wildCard ($scriptModule) {
             '*.psm1' { $typeTesting = 'Module' }
             '*.ps1' { $typeTesting = 'Script' }
             '*.psd1' { $typeTesting = 'Manifest' }
         }
- 
+
         Context "Checking $typeTesting – $($scriptModule) - conforms to Script Analyzer Rules" {
             forEach ($scriptAnalyzerRule in $scriptAnalyzerRules) {
                 It "Script Analyzer Rule $scriptAnalyzerRule" {

@@ -361,7 +361,9 @@ function Get-TrxContent {
             $trxAttachments = Get-TrxAttachmentList -FilePath (Join-FilePath -Path $OutputFolder -ChildPath $trxFile.fileName)
             Write-Verbose "Processing attachments"
             foreach ($node in $trxAttachments) {
-                $nodeFolder = [Path]::GetDirectoryName($node)
+                $normalizedNode = (Join-Path -Path '.' -ChildPath $node).Substring(2)
+                $nodeFolder = [Path]::GetDirectoryName($normalizedNode)
+                Write-Verbose "$node  =>  $nodeFolder"
                 $nodePath = Join-FilePath -Path (Join-FilePath -Path $trxDirectoryName -ChildPath 'In') -ChildPath $nodeFolder
                 $nodeFileName = [Path]::GetFileName($node)
                 Write-Verbose "The file '$nodeFileName' will be stored at '$nodePath'"
