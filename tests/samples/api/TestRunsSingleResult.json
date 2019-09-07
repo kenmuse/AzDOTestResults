@@ -1,0 +1,19 @@
+{
+	"count": 1,
+	"value": [
+		{
+			"id": 1000522,
+			"name": "TestRun_TestTrxBug-CI_753",
+			"url": "urn://org/project/_apis/test/Runs/1000522",
+			"isAutomated": true,
+			"state": "Completed",
+			"totalTests": 6,
+			"incompleteTests": 0,
+			"notApplicableTests": 0,
+			"passedTests": 6,
+			"unanalyzedTests": 0,
+			"revision": 0,
+			"webAccessUrl": "urn://org/project/_TestManagement/Runs?runId=1000522&_a=runCharts"
+		}
+	]
+}

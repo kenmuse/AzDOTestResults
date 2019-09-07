@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TestRun id="8dbcaccf-458a-4052-a5c3-90e8d98ae878" name="DeplRoot@agent 2019-08-25 05:47:18" runUser="agent\DeplRoot" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <Times creation="2019-08-25T05:47:18.3299459+00:00" queuing="2019-08-25T05:47:18.3299459+00:00" start="2019-08-25T05:47:05.9000932+00:00" finish="2019-08-25T05:47:18.3767838+00:00" />
+  <TestSettings name="default" id="c765fa73-592e-4f85-8571-0f2a529df896">
+    <Deployment runDeploymentRoot="DeplRoot_agent_2019-08-25_05_47_18" />
+  </TestSettings>
+  <Results>
+    <UnitTestResult executionId="4bfe7cf5-0cf7-4ed9-9889-1173d09b6a38" testId="0e6e2120-bc6e-7fa9-e793-f79d2253f9b0" testName="TestMultiplication" computerName="agent" duration="00:00:00.2539683" startTime="2019-08-25T05:47:16.5444160+00:00" endTime="2019-08-25T05:47:17.2020163+00:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="4bfe7cf5-0cf7-4ed9-9889-1173d09b6a38" />
+    <UnitTestResult executionId="d83e5eed-cd1a-4b84-b9b5-4ea606baea4d" testId="4e96591a-d2cc-1c60-439d-c5dcd3b5bae6" testName="TestDivision" computerName="agent" duration="00:00:00.0004622" startTime="2019-08-25T05:47:17.2174928+00:00" endTime="2019-08-25T05:47:17.2174928+00:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="d83e5eed-cd1a-4b84-b9b5-4ea606baea4d" />
+    <UnitTestResult executionId="ea3e685f-d190-4eea-909d-145ae5185487" testId="0fe556b0-e1b8-a37f-c3f1-0f891948ee4a" testName="TestDivisionByZero" computerName="agent" duration="00:00:00.0271557" startTime="2019-08-25T05:47:17.2174928+00:00" endTime="2019-08-25T05:47:17.2486849+00:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="ea3e685f-d190-4eea-909d-145ae5185487" />
+  </Results>
+  <TestDefinitions>
+    <UnitTest name="TestDivisionByZero" storage="d:\a\1\s\unittests\bin\debug\unittests.dll" id="0fe556b0-e1b8-a37f-c3f1-0f891948ee4a">
+      <Execution id="ea3e685f-d190-4eea-909d-145ae5185487" />
+      <TestMethod codeBase="d:\a\1\s\UnitTests\bin\Debug\UnitTests.dll" adapterTypeName="executor://mstestadapter/v1" className="UnitTests.SimpleArithmeticTests" name="TestDivisionByZero" />
+    </UnitTest>
+    <UnitTest name="TestDivision" storage="d:\a\1\s\unittests\bin\debug\unittests.dll" id="4e96591a-d2cc-1c60-439d-c5dcd3b5bae6">
+      <Execution id="d83e5eed-cd1a-4b84-b9b5-4ea606baea4d" />
+      <TestMethod codeBase="d:\a\1\s\UnitTests\bin\Debug\UnitTests.dll" adapterTypeName="executor://mstestadapter/v1" className="UnitTests.SimpleArithmeticTests" name="TestDivision" />
+    </UnitTest>
+    <UnitTest name="TestMultiplication" storage="d:\a\1\s\unittests\bin\debug\unittests.dll" id="0e6e2120-bc6e-7fa9-e793-f79d2253f9b0">
+      <Execution id="4bfe7cf5-0cf7-4ed9-9889-1173d09b6a38" />
+      <TestMethod codeBase="d:\a\1\s\UnitTests\bin\Debug\UnitTests.dll" adapterTypeName="executor://mstestadapter/v1" className="UnitTests.SimpleArithmeticTests" name="TestMultiplication" />
+    </UnitTest>
+  </TestDefinitions>
+  <TestEntries>
+    <TestEntry testId="0e6e2120-bc6e-7fa9-e793-f79d2253f9b0" executionId="4bfe7cf5-0cf7-4ed9-9889-1173d09b6a38" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="4e96591a-d2cc-1c60-439d-c5dcd3b5bae6" executionId="d83e5eed-cd1a-4b84-b9b5-4ea606baea4d" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="0fe556b0-e1b8-a37f-c3f1-0f891948ee4a" executionId="ea3e685f-d190-4eea-909d-145ae5185487" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+  </TestEntries>
+  <TestLists>
+    <TestList name="Results Not in a List" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestList name="All Loaded Results" id="19431567-8539-422a-85d7-44ee4e166bda" />
+  </TestLists>
+  <ResultSummary outcome="Completed">
+    <Counters total="3" executed="3" passed="3" failed="0" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" />
+    <Output>
+      <StdOut>[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v2.4.1 (32-bit Desktop .NET 4.0.30319.42000)&#xD;
+</StdOut>
+    </Output>
+    <CollectorDataEntries>
+      <Collector agentName="agent" uri="datacollector://microsoft/CodeCoverage/2.0" collectorDisplayName="Code Coverage">
+      </Collector>
+    </CollectorDataEntries>
+  </ResultSummary>
+</TestRun>

@@ -1,0 +1,28 @@
+TOPIC
+    about_AzDOTestResults
+
+SHORT DESCRIPTION
+    Provides functions for retrieving Test Results attached to a build in Azure DevOps
+
+LONG DESCRIPTION
+    This module downloads the test results (TRX files, code coverage, etc.) associated
+    with a build in Azure DevOps
+
+    If you have any questions, suggestions, or bug reports, please contact Ken
+    at kmuse@wintellect.com.
+
+    The following cmdlets are included.
+
+    Cmdlet                         Description
+    ------------------             ----------------------------------------------
+    Get-BuildTestContent           Retrieves test results from the currently running Azure DevOps
+                                   build as part of a build pipeline.
+
+    Get-TestContent                Retrieves test results from a specific Azure DevOps build
+
+
+SEE ALSO
+    Online help and updates:
+            http://www.wintellect.com/devcenter/author/kmuse
+    GitHub repository:
+            https://github.com/KenMuse/AzDOTestResults
