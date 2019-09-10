@@ -23,7 +23,7 @@ Author = 'Ken Muse (Wintellect)'
 CompanyName = 'Wintellect'
 
 # Copyright statement for this module
-Copyright = '© 2019 Ken Muse. All rights reserved.'
+Copyright = '(C) 2019 Ken Muse. All rights reserved.'
 
 # Description of the functionality provided by this module
 Description = 'Support for downloading test results from Azure DevOps'
