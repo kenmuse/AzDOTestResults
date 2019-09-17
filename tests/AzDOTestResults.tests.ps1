@@ -150,6 +150,82 @@ InModuleScope $moduleName {
             It "Should map the 10 coverage file correctly" {
 				$results | Should Contain ([Path]::GetFullPath('/root/simple_file/In/agent/DeplRoot_agent 2019-08-25 05_47_10.coverage'))
             }
+        }
+
+        Context "Given a TRX file containing two coverage files and an empty output path" {
+
+            $trxFiles = @(
+                @{
+                    fileName = 'simple file.trx'
+                    url = 'urn://org/project/api/path'
+                }
+            )
+            Mock -CommandName Get-TestAttachment -Verifiable -MockWith {
+            }
+
+            Mock -CommandName Get-TrxAttachmentList -Verifiable -MockWith {
+                @(
+                    ('agent{0}DeplRoot_agent 2019-08-25 05_47_09.coverage' -f [IO.Path]::DirectorySeparatorChar),
+                    ('agent{0}DeplRoot_agent 2019-08-25 05_47_10.coverage' -f [IO.Path]::DirectorySeparatorChar)
+                )
+            }
+
+            $results = Get-TrxContent -Files $trxFiles -OutputFolder '/root' -OutputFolderFormat ''
+            $results | Format-List
+
+			It "Should not have null results" {
+				$results | Should Not Be $null
+			}
+
+			It "Should have two children" {
+				$results.Length | Should Be 2
+			}
+
+			It "Should map the 09 coverage file correctly" {
+				$results | Should Contain ([Path]::GetFullPath('/root/simple_file/DeplRoot_agent 2019-08-25 05_47_09.coverage'))
+            }
+
+            It "Should map the 10 coverage file correctly" {
+				$results | Should Contain ([Path]::GetFullPath('/root/simple_file/DeplRoot_agent 2019-08-25 05_47_10.coverage'))
+            }
+        }
+
+        Context "Given a TRX file containing two coverage files and a defined output path with a folder" {
+
+            $trxFiles = @(
+                @{
+                    fileName = 'simple file.trx'
+                    url = 'urn://org/project/api/path'
+                }
+            )
+            Mock -CommandName Get-TestAttachment -Verifiable -MockWith {
+            }
+
+            Mock -CommandName Get-TrxAttachmentList -Verifiable -MockWith {
+                @(
+                    ('agent{0}DeplRoot_agent 2019-08-25 05_47_09.coverage' -f [IO.Path]::DirectorySeparatorChar),
+                    ('agent{0}DeplRoot_agent 2019-08-25 05_47_10.coverage' -f [IO.Path]::DirectorySeparatorChar)
+                )
+            }
+
+            $results = Get-TrxContent -Files $trxFiles -OutputFolder '/root' -OutputFolderFormat '$folder'
+            $results | Format-List
+
+			It "Should not have null results" {
+				$results | Should Not Be $null
+			}
+
+			It "Should have two children" {
+				$results.Length | Should Be 2
+			}
+
+			It "Should map the 09 coverage file correctly" {
+				$results | Should Contain ([Path]::GetFullPath('/root/simple_file/agent/DeplRoot_agent 2019-08-25 05_47_09.coverage'))
+            }
+
+            It "Should map the 10 coverage file correctly" {
+				$results | Should Contain ([Path]::GetFullPath('/root/simple_file/agent/DeplRoot_agent 2019-08-25 05_47_10.coverage'))
+            }
 		}
     }
 

@@ -6,13 +6,13 @@ Set-StrictMode -Version 'Latest'
 
 $PSDefaultParameterValues.Clear()
 
+function Get-BuildEnvironment {
 <#
-  .Synopsis
+  .SYNOPSIS
   Gathers the appropriate build environment variables in Azure DevOps
   required for the download process and returns a custom object containing
   the values
 #>
-function Get-BuildEnvironment {
     [CmdletBinding()]
     [OutputType([PSCustomObject])]
     param()
@@ -22,17 +22,18 @@ function Get-BuildEnvironment {
                 Project         = $env:SYSTEM_TEAMPROJECT
                 AccessToken     = $env:SYSTEM_ACCESSTOKEN
                 BuildUri        = $env:BUILD_BUILDURI
-                OutputFolder    = $env:COMMON_TESTRESULTSDIRECTORY
+                CommonTestResultsFolder = $env:COMMON_TESTRESULTSDIRECTORY
+                TempTestResultsFolder = "$env:AGENT_TEMPDIRECTORY/TestResults"
                 ProjectUri      = "$($env:SYSTEM_TEAMFOUNDATIONSERVERURI)/$($env:SYSTEM_TEAMPROJECT)"
             })
     }
 }
 
+function Get-AuthorizationHeader {
 <#
-  .Synopsis
+  .SYNOPSIS
   Creates the HTTP Authorization Header.
 #>
-function Get-AuthorizationHeader {
     [CmdletBinding()]
     [OutputType([string])]
     param(
@@ -46,11 +47,11 @@ function Get-AuthorizationHeader {
     }
 }
 
+function Get-TrxAttachmentList {
 <#
-  .Synopsis
+  .SYNOPSIS
   Gets the list of coverage attachments from a TRX file.
 #>
-function Get-TrxAttachmentList {
     [CmdletBinding()]
     [OutputType([string[]])]
     param(
@@ -68,21 +69,21 @@ function Get-TrxAttachmentList {
     }
 }
 
+function Get-TestRunList {
 <#
-  .Synopsis
+  .SYNOPSIS
   Invokes an Azure DevOps REST call to retrieve the list of test runs associated with the build
 
-  .Parameter BuildUri
+  .PARAMETER BuildUri
   The URI of the build associated with the tests
 
-  .Parameter BaseUri
+  .PARAMETER BaseUri
   The base URI containing the organization name and project name, such
   as https://dev.azure.com/myOrg/myProject.
 
-  .Parameter AccessToken
+  .PARAMETER AccessToken
   A PAT token or build access token providing authorization for the request
 #>
-function Get-TestRunList {
     [CmdletBinding()]
     [OutputType([psobject[]])]
     param(
@@ -117,18 +118,17 @@ function Get-TestRunList {
     }
 }
 
+function Get-TestAttachmentList {
 <#
-  .Synopsis
+  .SYNOPSIS
   Invokes an Azure DevOps REST call to retrieve the test run details for a specific test
 
-  .Parameter TestUri
+  .PARAMETER TestUri
   The URI for retrieving the test details
 
-  .Parameter AccessToken
+  .PARAMETER AccessToken
   A PAT token or build access token providing authorization for the request
 #>
-
-function Get-TestAttachmentList {
     [CmdletBinding()]
     [OutputType([psobject[]])]
     param(
@@ -159,21 +159,20 @@ function Get-TestAttachmentList {
     }
 }
 
+function Get-TestAttachment {
 <#
-  .Synopsis
+  .SYNOPSIS
   Invokes an Azure DevOps REST call to retrieve a specific test attachment
 
-  .Parameter AttachmentUri
+  .PARAMETER AttachmentUri
   The URI for retrieving the test attachment
 
-  .Parameter OutputPath
+  .PARAMETER OutputPath
   The absolute path to a folder or file where the content should be saved.
 
-  .Parameter AccessToken
+  .PARAMETER AccessToken
   A PAT token or build access token providing authorization for the request
 #>
-
-function Get-TestAttachment {
     [CmdletBinding()]
     param(
         [ValidateNotNullOrEmpty()]
@@ -207,19 +206,19 @@ function Get-TestAttachment {
     }
 }
 
+function Join-FilePath {
 <#
-  .Synopsis
+  .SYNOPSIS
   Combines two filesystem paths and returns the full path, with proper OS-specific
   directory separators
 #>
-
-function Join-FilePath {
     [CmdletBinding()]
 	[OutputType([string])]
     param(
         [ValidateNotNullOrEmpty()]
         [Parameter(Mandatory, Position = 0)]
         [string] $Path,
+
         [ValidateNotNullOrEmpty()]
         [Parameter(Mandatory, Position = 1)]
         [string] $ChildPath
@@ -230,18 +229,20 @@ function Join-FilePath {
     }
 }
 
+function Invoke-WebRequestWithRetry {
 <#
-  .Synopsis
+  .SYNOPSIS
   A variant of the Invoke-WebRequest method which supports automatic retries
 #>
-function Invoke-WebRequestWithRetry {
     [CmdletBinding()]
     [OutputType([psobject])]
     param(
-        [parameter(Mandatory, Position = 0)]
+        [Parameter(Mandatory, Position = 0)]
         [ValidateNotNull()]
         [hashtable] $Parameters,
+
         [int] $MaxRetries = 3,
+
         [int] $SleepTime = 1000
     )
 
@@ -271,12 +272,12 @@ function Invoke-WebRequestWithRetry {
     }
 }
 
+function Group-TestAttachmentList {
 <#
-  .Synopsis
+  .SYNOPSIS
   Gathers the list of attachments into files which represent Test Run Summaries (TRX files)
   and all other content
 #>
-function Group-TestAttachmentList {
     [CmdletBinding()]
     [OutputType([PSCustomObject])]
     param(
@@ -315,17 +316,18 @@ function Group-TestAttachmentList {
     }
 }
 
+function Get-GroupedAttachmentList {
 <#
-  .Synopsis
+  .SYNOPSIS
   Downloads the list of test attachments and groups the results of files which represent
   Test Run Summaries (TRX files) and all other content
 #>
-function Get-GroupedAttachmentList {
     [CmdletBinding()]
     param(
         [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
         [ValidateNotNullOrEmpty()]
         [Uri] $TestUri,
+
         [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
         [ValidateNotNullOrEmpty()]
         [string] $AccessToken
@@ -336,21 +338,24 @@ function Get-GroupedAttachmentList {
     }
 }
 
+function Get-TrxContent {
 <#
-  .Synopsis
+  .SYNOPSIS
   Downloads the TRX file and returns an array of expected child content paths.
 #>
-function Get-TrxContent {
     [CmdletBinding()]
     [OutputType([string[]])]
     param(
-        [parameter(Mandatory, ValueFromPipeline, Position = 0)]
+        [Parameter(Mandatory, ValueFromPipeline, Position = 0)]
         [ValidateNotNull()]
         [PsCustomObject[]] $Files,
 
-        [parameter(Mandatory, ValueFromPipeline, Position = 1)]
+        [Parameter(Mandatory, ValueFromPipeline, Position = 1)]
         [ValidateNotNull()]
-        [string] $OutputFolder
+        [string] $OutputFolder,
+
+        [Parameter(ValueFromPipeline)]
+        [string] $OutputFolderFormat = 'In/$folder'
     )
     process {
         $trxChildPaths = New-Object System.Collections.ArrayList
@@ -362,48 +367,55 @@ function Get-TrxContent {
             Write-Verbose "Processing attachments"
             foreach ($node in $trxAttachments) {
                 $normalizedNode = (Join-Path -Path '.' -ChildPath $node).Substring(2)
-                $nodeFolder = [Path]::GetDirectoryName($normalizedNode)
-                Write-Verbose "$node  =>  $nodeFolder"
-                $nodePath = Join-FilePath -Path (Join-FilePath -Path $trxDirectoryName -ChildPath 'In') -ChildPath $nodeFolder
+                $folder = [Path]::GetDirectoryName($normalizedNode)
+                Write-Verbose "$node  => $folder"
+                $expandedPath = $ExecutionContext.InvokeCommand.ExpandString($OutputFolderFormat)
+                if ($expandedPath) {
+                    $nodePath = Join-FilePath -Path $trxDirectoryName -ChildPath $expandedPath
+                }
+                else {
+                    $nodePath = $trxDirectoryName
+                }
+
                 $nodeFileName = [Path]::GetFileName($node)
                 Write-Verbose "The file '$nodeFileName' will be stored at '$nodePath'"
                 $path = Join-FilePath -Path $nodePath -ChildPath $nodeFileName
                 [void]$trxChildPaths.Add($path)
             }
         }
+
         $trxChildPaths.ToArray()
     }
 }
 
+function Group-ChildContent {
 <#
-  .Synopsis
-  Determins the proper file locations for a set of files given the list of TRX child paths,
+  .SYNOPSIS
+  Determines the proper file locations for a set of files given the list of TRX child paths,
   the content files being downloaded, and the Output Folder and returns a hash list of file
   names and their destinations.
 
-  .Parameter TrxContentList
+  .PARAMETER TrxContentList
   The list of paths for expected TRX child content
 
-  .Parameter FileList
+  .PARAMETER FileList
   The list of files to be examined
 
-  .Parameter OutputFolder
+  .PARAMETER OutputFolder
   The output destination for non-TRX children
-
 #>
-function Group-ChildContent {
     [CmdletBinding()]
     [OutputType([hashtable])]
     param(
-        [parameter(Mandatory, ValueFromPipeline, Position = 0)]
+        [Parameter(Mandatory, ValueFromPipeline, Position = 0)]
         [ValidateNotNull()]
         [string[]] $TrxContentList,
 
-        [parameter(Mandatory, ValueFromPipeline, Position = 1)]
+        [Parameter(Mandatory, ValueFromPipeline, Position = 1)]
         [ValidateNotNull()]
         [string[]] $FileList,
 
-        [parameter(Mandatory, ValueFromPipeline)]
+        [Parameter(Mandatory, ValueFromPipeline)]
         [ValidateNotNull()]
         [string] $OutputFolder
     )
@@ -428,65 +440,99 @@ function Group-ChildContent {
     }
 }
 
+function Copy-TestResultToCommon {
 <#
- .Synopsis
- Retrieves test results for SonarQube from the current Azure DevOps build.
+ .SYNOPSIS
+ Retrieves test results for SonarQube from the current Azure DevOps build and places them in the
+ Common Test Results folder ($Common.TestResultsDirectory)
 
- .Description
+ .DESCRIPTION
  Retrieves the test attachments from a build and places them in appropriate locations
  for SonarQube. This method expects the Azure DevOps environment variables to be set
  in order to automatically determine the location and build identity. This method calls
- Get-TestContent using the appropriate Azure DevOps environment variables.
+ Copy-TestResult using the appropriate Azure DevOps environment variables.
 
- .Example
- Get-BuildTestContent
+ .EXAMPLE
+ Copy-TestResultToCommon
 #>
-function Get-BuildTestContent {
     [CmdletBinding()]
     param()
     process {
-        Get-BuildEnvironment | Get-TestContent
+        $buildEnv = Get-BuildEnvironment
+        Copy-TestResult -ProjectUri $buildEnv.ProjectUri -AccessToken $buildEnv.AccessToken -BuildUri $buildEnv.BuildUri -OutputFolder $buildEnv.CommonTestResultsFolder
     }
 }
 
+function Copy-TestResultToTemp {
+    <#
+     .SYNOPSIS
+     Retrieves test results for SonarQube from the current Azure DevOps build and places them in the
+     Common Test Results folder ($Agent.TempDirectory)/TestResults
+
+     .DESCRIPTION
+     Retrieves the test attachments from a build and places them in appropriate locations
+     for SonarQube. This method expects the Azure DevOps environment variables to be set
+     in order to automatically determine the location and build identity. This method calls
+     Copy-TestResult using the appropriate Azure DevOps environment variables.
+
+     .EXAMPLE
+     Copy-TestResultToTemp
+    #>
+        [CmdletBinding()]
+        param()
+        process {
+            $buildEnv = Get-BuildEnvironment
+            Copy-TestResult -ProjectUri $buildEnv.ProjectUri -AccessToken $buildEnv.AccessToken -BuildUri $buildEnv.BuildUri -OutputFolder $buildEnv.TempTestResultsFolder
+        }
+}
+
+function Copy-TestResult {
 <#
- .Synopsis
+ .SYNOPSIS
  Retrieves test results from a specific Azure DevOps build.
 
- .Description
+ .DESCRIPTION
  Retrieves the test attachments from a build and places them in a specified location.
 
- .Parameter ProjectUri
+ .PARAMETER ProjectUri
  The URI to the project root in Azure DevOps.
 
- .Parameter AccessToken
+ .PARAMETER AccessToken
  The PAT token or authorization token to use for requesting the build details.
 
- .Parameter BuildUri
+ .PARAMETER BuildUri
  The VSTFS URI for the build whose test results should be downloaded.
 
- .Parameter OutputFolder
+ .PARAMETER OutputFolder
  The location for storing the test results. Tests will be organized based on the expected
  folder conventions for SonarQube and the contents of any downloaded TRX files.
 
- .Example
- Get-TestContent -ProjectUri https://dev.azure.com/myorg/project -AccessToken <PAT> -BuildUri vstfs:///Build/Build/1234 -OutputFolder c:\test-results
+ .PARAMETER OutputFolderFormat
+ The format string to use for creating child folders for the TRX file. The string can utilize a replacement variable, $folder, which
+ indicates the folder path as specified in the TRX file. All folder paths will be relative to OutputFolder.
+
+ .EXAMPLE
+ Copy-TestResult -ProjectUri https://dev.azure.com/myorg/project -AccessToken <PAT> -BuildUri vstfs:///Build/Build/1234 -OutputFolder c:\test-results -OutputFolderFormat 'In/$folder'
 #>
-function Get-TestContent {
     [CmdletBinding()]
     param(
         [Parameter(ValueFromPipelineByPropertyName, Mandatory)]
         [ValidateNotNullOrEmpty()]
         [Uri] $ProjectUri,
+
         [Parameter(ValueFromPipelineByPropertyName, Mandatory)]
         [ValidateNotNullOrEmpty()]
         [string] $AccessToken,
+
         [Parameter(ValueFromPipelineByPropertyName, Mandatory)]
         [ValidateNotNullOrEmpty()]
         [string] $BuildUri,
+
         [Parameter(ValueFromPipelineByPropertyName, Mandatory)]
         [ValidateNotNullOrEmpty()]
-        [string] $OutputFolder
+        [string] $OutputFolder,
+
+        [string] $OutputFolderFormat = 'In/$folder'
     )
 
     process {
@@ -508,7 +554,7 @@ function Get-TestContent {
                 Get-TestAttachment -AttachmentUri $item.url -OutputPath "$OutputFolder/$($item.fileName)" -AccessToken $AccessToken
             }
 
-            $trxNodes = Get-TrxContent -Files $trxFiles -OutputFolder $OutputFolder
+            $trxNodes = Get-TrxContent -Files $trxFiles -OutputFolder $OutputFolder -OutputFolderFormat $OutputFolderFormat
             # Create the required folders for child content
             foreach($node in $trxNodes) {
                 if ($node) {
@@ -541,4 +587,4 @@ function Get-TestContent {
     }
 }
 
-Export-ModuleMember -Function Get-TestContent, Get-BuildTestContent
+Export-ModuleMember -Function Copy-TestResult, Copy-TestResultToCommon, Copy-TestResultToTemp
