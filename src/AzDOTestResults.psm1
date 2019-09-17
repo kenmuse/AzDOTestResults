@@ -355,13 +355,14 @@ function Get-TrxContent {
         [string] $OutputFolder,
 
         [Parameter(ValueFromPipeline)]
-        [string] $OutputFolderFormat = 'In/$folder'
+        [string] $OutputFolderFormat = '$trxFolder/In/$folder'
     )
     process {
         $trxChildPaths = New-Object System.Collections.ArrayList
         foreach ($trxFile in $Files) {
             Write-Verbose "Downloading TRX: $($trxFile.fileName)"
-            $trxDirectoryName = Join-FilePath -Path $OutputFolder -ChildPath ([Path]::GetFileNameWithoutExtension($trxFile.fileName).Replace(' ', '_'))
+            $trxFolder = [Path]::GetFileNameWithoutExtension($trxFile.fileName).Replace(' ', '_')
+            $trxDirectoryName = Join-FilePath -Path $OutputFolder -ChildPath $trxFolder
             Write-Verbose "Configuring TRX folder: $trxDirectoryName"
             $trxAttachments = Get-TrxAttachmentList -FilePath (Join-FilePath -Path $OutputFolder -ChildPath $trxFile.fileName)
             Write-Verbose "Processing attachments"
@@ -369,12 +370,16 @@ function Get-TrxContent {
                 $normalizedNode = (Join-Path -Path '.' -ChildPath $node).Substring(2)
                 $folder = [Path]::GetDirectoryName($normalizedNode)
                 Write-Verbose "$node  => $folder"
+                if ($OutputFolderFormat.StartsWith('/') -or $OutputFolderFormat.StartsWith('\')) {
+                    $OutputFolderFormat = $OutputFolderFormat.Substring(1)
+                }
+
                 $expandedPath = $ExecutionContext.InvokeCommand.ExpandString($OutputFolderFormat)
                 if ($expandedPath) {
-                    $nodePath = Join-FilePath -Path $trxDirectoryName -ChildPath $expandedPath
+                    $nodePath = Join-FilePath -Path $OutputFolder -ChildPath $expandedPath
                 }
                 else {
-                    $nodePath = $trxDirectoryName
+                    $nodePath = $OutputFolder
                 }
 
                 $nodeFileName = [Path]::GetFileName($node)
@@ -508,8 +513,10 @@ function Copy-TestResult {
  folder conventions for SonarQube and the contents of any downloaded TRX files.
 
  .PARAMETER OutputFolderFormat
- The format string to use for creating child folders for the TRX file. The string can utilize a replacement variable, $folder, which
- indicates the folder path as specified in the TRX file. All folder paths will be relative to OutputFolder.
+ The format string to use for creating child folders for the TRX file dependencies. The string can utilize a replacement variable, $folder,
+ which indicates the folder path for a given dependency (as specified in the TRX file). A second variable, $trxFolder, is the safe folder
+ based on the name of the TRX file. The default path is '$trxFolder/In/$folder'. Note that the path string should not be double-quoted
+ when the replacement variables are used. All folder paths will be relative to OutputFolder.
 
  .EXAMPLE
  Copy-TestResult -ProjectUri https://dev.azure.com/myorg/project -AccessToken <PAT> -BuildUri vstfs:///Build/Build/1234 -OutputFolder c:\test-results -OutputFolderFormat 'In/$folder'
@@ -532,7 +539,7 @@ function Copy-TestResult {
         [ValidateNotNullOrEmpty()]
         [string] $OutputFolder,
 
-        [string] $OutputFolderFormat = 'In/$folder'
+        [string] $OutputFolderFormat = '$trxFolder/In/$folder'
     )
 
     process {

@@ -182,11 +182,11 @@ InModuleScope $moduleName {
 			}
 
 			It "Should map the 09 coverage file correctly" {
-				$results | Should Contain ([Path]::GetFullPath('/root/simple_file/DeplRoot_agent 2019-08-25 05_47_09.coverage'))
+				$results | Should Contain ([Path]::GetFullPath('/root/DeplRoot_agent 2019-08-25 05_47_09.coverage'))
             }
 
             It "Should map the 10 coverage file correctly" {
-				$results | Should Contain ([Path]::GetFullPath('/root/simple_file/DeplRoot_agent 2019-08-25 05_47_10.coverage'))
+				$results | Should Contain ([Path]::GetFullPath('/root/DeplRoot_agent 2019-08-25 05_47_10.coverage'))
             }
         }
 
@@ -208,7 +208,7 @@ InModuleScope $moduleName {
                 )
             }
 
-            $results = Get-TrxContent -Files $trxFiles -OutputFolder '/root' -OutputFolderFormat '$folder'
+            $results = Get-TrxContent -Files $trxFiles -OutputFolder '/root' -OutputFolderFormat '$trxFolder/$folder'
             $results | Format-List
 
 			It "Should not have null results" {
