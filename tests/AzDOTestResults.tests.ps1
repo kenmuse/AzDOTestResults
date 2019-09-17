@@ -170,7 +170,7 @@ InModuleScope $moduleName {
                 )
             }
 
-            $results = Get-TrxContent -Files $trxFiles -OutputFolder '/root' -OutputFolderFormat ''
+            $results = Get-TrxContent -Files $trxFiles -OutputFolder '/root' -TrxDependencyPath ''
             $results | Format-List
 
 			It "Should not have null results" {
@@ -208,7 +208,7 @@ InModuleScope $moduleName {
                 )
             }
 
-            $results = Get-TrxContent -Files $trxFiles -OutputFolder '/root' -OutputFolderFormat '$trxFolder/$folder'
+            $results = Get-TrxContent -Files $trxFiles -OutputFolder '/root' -TrxDependencyPath '$trxFolder/$folder'
             $results | Format-List
 
 			It "Should not have null results" {

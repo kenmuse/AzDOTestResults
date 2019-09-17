@@ -355,7 +355,7 @@ function Get-TrxContent {
         [string] $OutputFolder,
 
         [Parameter(ValueFromPipeline)]
-        [string] $OutputFolderFormat = '$trxFolder/In/$folder'
+        [string] $TrxDependencyPath = '$trxFolder/In/$folder'
     )
     process {
         $trxChildPaths = New-Object System.Collections.ArrayList
@@ -370,11 +370,11 @@ function Get-TrxContent {
                 $normalizedNode = (Join-Path -Path '.' -ChildPath $node).Substring(2)
                 $folder = [Path]::GetDirectoryName($normalizedNode)
                 Write-Verbose "$node  => $folder"
-                if ($OutputFolderFormat.StartsWith('/') -or $OutputFolderFormat.StartsWith('\')) {
-                    $OutputFolderFormat = $OutputFolderFormat.Substring(1)
+                if ($TrxDependencyPath.StartsWith('/') -or $TrxDependencyPath.StartsWith('\')) {
+                    $TrxDependencyPath = $TrxDependencyPath.Substring(1)
                 }
 
-                $expandedPath = $ExecutionContext.InvokeCommand.ExpandString($OutputFolderFormat)
+                $expandedPath = $ExecutionContext.InvokeCommand.ExpandString($TrxDependencyPath)
                 if ($expandedPath) {
                     $nodePath = Join-FilePath -Path $OutputFolder -ChildPath $expandedPath
                 }
@@ -512,14 +512,14 @@ function Copy-TestResult {
  The location for storing the test results. Tests will be organized based on the expected
  folder conventions for SonarQube and the contents of any downloaded TRX files.
 
- .PARAMETER OutputFolderFormat
+ .PARAMETER TrxDependencyPath
  The format string to use for creating child folders for the TRX file dependencies. The string can utilize a replacement variable, $folder,
  which indicates the folder path for a given dependency (as specified in the TRX file). A second variable, $trxFolder, is the safe folder
  based on the name of the TRX file. The default path is '$trxFolder/In/$folder'. Note that the path string should not be double-quoted
  when the replacement variables are used. All folder paths will be relative to OutputFolder.
 
  .EXAMPLE
- Copy-TestResult -ProjectUri https://dev.azure.com/myorg/project -AccessToken <PAT> -BuildUri vstfs:///Build/Build/1234 -OutputFolder c:\test-results -OutputFolderFormat 'In/$folder'
+ Copy-TestResult -ProjectUri https://dev.azure.com/myorg/project -AccessToken <PAT> -BuildUri vstfs:///Build/Build/1234 -OutputFolder c:\test-results -TrxDependencyPath 'In/$folder'
 #>
     [CmdletBinding()]
     param(
@@ -539,7 +539,7 @@ function Copy-TestResult {
         [ValidateNotNullOrEmpty()]
         [string] $OutputFolder,
 
-        [string] $OutputFolderFormat = '$trxFolder/In/$folder'
+        [string] $TrxDependencyPath = '$trxFolder/In/$folder'
     )
 
     process {
@@ -561,7 +561,7 @@ function Copy-TestResult {
                 Get-TestAttachment -AttachmentUri $item.url -OutputPath "$OutputFolder/$($item.fileName)" -AccessToken $AccessToken
             }
 
-            $trxNodes = Get-TrxContent -Files $trxFiles -OutputFolder $OutputFolder -OutputFolderFormat $OutputFolderFormat
+            $trxNodes = Get-TrxContent -Files $trxFiles -OutputFolder $OutputFolder -TrxDependencyPath $TrxDependencyPath
             # Create the required folders for child content
             foreach($node in $trxNodes) {
                 if ($node) {
