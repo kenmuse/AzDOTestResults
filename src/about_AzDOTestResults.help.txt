@@ -6,7 +6,21 @@ SHORT DESCRIPTION
 
 LONG DESCRIPTION
     This module downloads the test results (TRX files, code coverage, etc.) associated
-    with a build in Azure DevOps
+    with a build in Azure DevOps. Additionally, the dependencies of the TRX file can
+    will be restored using the directory structure specified in the TRX, optionally being
+    restored into a directory structure which is user-configurable. By default, the directory
+    convention is organized to support third-party testing tools and uses the format:
+
+    $trxFolder/In/$folder
+
+    The specific directoy convention for TRX dependencies utilizes two special variables:
+
+    Variable                       Description
+    ------------------             -------------------
+    $folder                        The directory structure specified in the TRX file
+    $trxFolder                     A directory name based on the name of the TRX file
+                                   with the file extension removed and spaces replaced
+                                   with underscores.
 
     If you have any questions, suggestions, or bug reports, please contact Ken
     at kmuse@wintellect.com.
@@ -15,11 +29,15 @@ LONG DESCRIPTION
 
     Cmdlet                         Description
     ------------------             ----------------------------------------------
-    Get-BuildTestContent           Retrieves test results from the currently running Azure DevOps
-                                   build as part of a build pipeline.
-
-    Get-TestContent                Retrieves test results from a specific Azure DevOps build
-
+    Copy-TestResult                Retrieves test results from a specific Azure DevOps build
+                                   pipeline and places them in the specified output folder.
+    Copy-TestResultToCommon        Retrieves test results from the currently running Azure DevOps
+                                   build pipeline and places them in the directory specified.
+                                   by the COMMON_TESTRESULTSDIRECTORY environment variable
+    Copy-TestResultToTemp          Retrieves test results from the currently running Azure DevOps
+                                   build pipeline and places them in the TestResults directory
+                                   inside the director  specified by the AGENT_TEMPDIRECTORY
+                                   environment variable.
 
 SEE ALSO
     Online help and updates:

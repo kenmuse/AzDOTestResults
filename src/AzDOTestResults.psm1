@@ -37,8 +37,8 @@ function Get-AuthorizationHeader {
     [CmdletBinding()]
     [OutputType([string])]
     param(
+        [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
-        [Parameter(Mandatory)]
         [string]$Token
     )
 
@@ -55,7 +55,7 @@ function Get-TrxAttachmentList {
     [CmdletBinding()]
     [OutputType([string[]])]
     param(
-        [Parameter(Mandatory, ValueFromPipeline)]
+        [Parameter(Mandatory = $true, ValueFromPipeline = $true)]
         [ValidateNotNullOrEmpty()]
         [string] $FilePath
     )
@@ -87,15 +87,15 @@ function Get-TestRunList {
     [CmdletBinding()]
     [OutputType([psobject[]])]
     param(
-        [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
+        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true)]
         [ValidateNotNullOrEmpty()]
         [string] $BuildUri,
 
-        [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
+        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true)]
         [ValidateNotNullOrEmpty()]
         [string] $BaseUri,
 
-        [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
+        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true)]
         [ValidateNotNullOrEmpty()]
         [string] $AccessToken
     )
@@ -132,11 +132,12 @@ function Get-TestAttachmentList {
     [CmdletBinding()]
     [OutputType([psobject[]])]
     param(
+
+        [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
-        [Parameter(Mandatory)]
         [string] $TestUri,
 
-        [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
+        [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [string] $AccessToken
     )
@@ -175,16 +176,17 @@ function Get-TestAttachment {
 #>
     [CmdletBinding()]
     param(
+        [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
-        [Parameter(Mandatory)]
         [string] $AttachmentUri,
 
+
+        [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
-        [Parameter(Mandatory)]
         [string] $OutputPath,
 
+        [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
-        [Parameter(Mandatory)]
         [string] $AccessToken
     )
 
@@ -216,11 +218,11 @@ function Join-FilePath {
 	[OutputType([string])]
     param(
         [ValidateNotNullOrEmpty()]
-        [Parameter(Mandatory, Position = 0)]
+        [Parameter(Mandatory = $true, Position = 0)]
         [string] $Path,
 
         [ValidateNotNullOrEmpty()]
-        [Parameter(Mandatory, Position = 1)]
+        [Parameter(Mandatory = $true, Position = 1)]
         [string] $ChildPath
     )
     process {
@@ -237,7 +239,7 @@ function Invoke-WebRequestWithRetry {
     [CmdletBinding()]
     [OutputType([psobject])]
     param(
-        [Parameter(Mandatory, Position = 0)]
+        [Parameter(Mandatory = $true, Position = 0)]
         [ValidateNotNull()]
         [hashtable] $Parameters,
 
@@ -281,7 +283,7 @@ function Group-TestAttachmentList {
     [CmdletBinding()]
     [OutputType([PSCustomObject])]
     param(
-        [Parameter(Mandatory, ValueFromPipeline, Position = 0)]
+        [Parameter(Mandatory = $true, ValueFromPipeline = $true, Position = 0)]
         [ValidateNotNull()]
         [PSCustomObject[]] $Attachments
     )
@@ -324,11 +326,11 @@ function Get-GroupedAttachmentList {
 #>
     [CmdletBinding()]
     param(
-        [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
+        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true)]
         [ValidateNotNullOrEmpty()]
         [Uri] $TestUri,
 
-        [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
+        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true)]
         [ValidateNotNullOrEmpty()]
         [string] $AccessToken
     )
@@ -346,15 +348,15 @@ function Get-TrxContent {
     [CmdletBinding()]
     [OutputType([string[]])]
     param(
-        [Parameter(Mandatory, ValueFromPipeline, Position = 0)]
+        [Parameter(Mandatory = $true, ValueFromPipeline = $true, Position = 0)]
         [ValidateNotNull()]
         [PsCustomObject[]] $Files,
 
-        [Parameter(Mandatory, ValueFromPipeline, Position = 1)]
+        [Parameter(Mandatory = $true, ValueFromPipeline = $true, Position = 1)]
         [ValidateNotNull()]
         [string] $OutputFolder,
 
-        [Parameter(ValueFromPipeline)]
+        [Parameter(ValueFromPipeline = $true)]
         [string] $TrxDependencyPath = '$trxFolder/In/$folder'
     )
     process {
@@ -412,15 +414,15 @@ function Group-ChildContent {
     [CmdletBinding()]
     [OutputType([hashtable])]
     param(
-        [Parameter(Mandatory, ValueFromPipeline, Position = 0)]
+        [Parameter(Mandatory = $true, ValueFromPipeline = $true, Position = 0)]
         [ValidateNotNull()]
         [string[]] $TrxContentList,
 
-        [Parameter(Mandatory, ValueFromPipeline, Position = 1)]
+        [Parameter(Mandatory = $true, ValueFromPipeline = $true, Position = 1)]
         [ValidateNotNull()]
         [string[]] $FileList,
 
-        [Parameter(Mandatory, ValueFromPipeline)]
+        [Parameter(Mandatory = $true, ValueFromPipeline = $true)]
         [ValidateNotNull()]
         [string] $OutputFolder
     )
@@ -523,22 +525,23 @@ function Copy-TestResult {
 #>
     [CmdletBinding()]
     param(
-        [Parameter(ValueFromPipelineByPropertyName, Mandatory)]
+        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true)]
         [ValidateNotNullOrEmpty()]
         [Uri] $ProjectUri,
 
-        [Parameter(ValueFromPipelineByPropertyName, Mandatory)]
+        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true)]
         [ValidateNotNullOrEmpty()]
         [string] $AccessToken,
 
-        [Parameter(ValueFromPipelineByPropertyName, Mandatory)]
+        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true)]
         [ValidateNotNullOrEmpty()]
         [string] $BuildUri,
 
-        [Parameter(ValueFromPipelineByPropertyName, Mandatory)]
+        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true)]
         [ValidateNotNullOrEmpty()]
         [string] $OutputFolder,
 
+        [Parameter(ValueFromPipelineByPropertyName = $true)]
         [string] $TrxDependencyPath = '$trxFolder/In/$folder'
     )
 
