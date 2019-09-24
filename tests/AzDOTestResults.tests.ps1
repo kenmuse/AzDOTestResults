@@ -33,7 +33,7 @@ InModuleScope $moduleName {
             }
 
             It "Should call the function exactly 1 times" {
-                $result = Invoke-WebRequestWithRetry -Parameters @{Uri = 'http://any' } `
+                Invoke-WebRequestWithRetry -Parameters @{Uri = 'http://any' } `
                     -MaxRetries 2 `
                     -SleepTime 10
                 Assert-MockCalled Invoke-WebRequest -Exactly 1 -Scope It
@@ -49,7 +49,7 @@ InModuleScope $moduleName {
                 }
             }
 
-            $result = Get-TestRunList -BuildUri 'nnn' -BaseUri 'urn://ne' -AccessToken '1234'
+            Get-TestRunList -BuildUri 'nnn' -BaseUri 'urn://ne' -AccessToken '1234'
 
             It "Should automatically include  JSON content type" {
                 Assert-MockCalled Invoke-WebRequest -ParameterFilter { $Headers.Item('Accept') -eq 'application/json' } -Exactly -Times 1 -Scope Context
@@ -287,11 +287,11 @@ InModuleScope $moduleName {
             $results = Get-TrxAttachmentList -FilePath $trx
 
             It "Should correctly count the nodes" {
-                ($results | Measure).Count | Should Be 1
+                ($results | Measure-Object).Count | Should Be 1
             }
 
             It "Should return the names of the files" {
-                $results | Select -First 1 | Should Be 'agent\DeplRoot_agent 2019-08-25 05_47_09.coverage'
+                $results | Select-Object -First 1 | Should Be 'agent\DeplRoot_agent 2019-08-25 05_47_09.coverage'
             }
         }
 
@@ -301,11 +301,11 @@ InModuleScope $moduleName {
             $results = Get-TrxAttachmentList -FilePath $trx
 
             It "Should correctly count the nodes" {
-                ($results | Measure).Count | Should Be 1
+                ($results | Measure-Object).Count | Should Be 1
             }
 
             It "Should return the names of the files" {
-                $results | Select -First 1 | Should Be 'DeplRoot_agent 2019-08-25 05_47_09.coverage'
+                $results | Select-Object -First 1 | Should Be 'DeplRoot_agent 2019-08-25 05_47_09.coverage'
             }
         }
 
@@ -328,7 +328,7 @@ InModuleScope $moduleName {
                 }
             }
 
-            $result = Get-TestAttachment -AttachmentUri 'urn://ne' -AccessToken '1234' -OutputPath New-TemporaryFile.FullName
+            Get-TestAttachment -AttachmentUri 'urn://ne' -AccessToken '1234' -OutputPath New-TemporaryFile.FullName
 
             It "Should not include JSON content type" {
                 Assert-MockCalled Invoke-WebRequest -ParameterFilter { $Headers.Item('Accept') -eq 'application/json' } -Exactly -Times 0 -Scope Context
@@ -346,10 +346,10 @@ InModuleScope $moduleName {
 }
 
 Describe 'Script Analyzer Rules' {
-    $scriptsModules = Get-ChildItem $scriptRoot -Include *.psd1, *.psm1, *.ps1 -Exclude *.tests.ps1 -Recurse
+    $scriptsModules = Get-ChildItem $scriptRoot -Include *.psd1, *.psm1, *.ps1 -Recurse
     Context "Checking files to test exist and Invoke-ScriptAnalyzer cmdLet is available" {
         It "Checking files exist to test." {
-            ($scriptsModules | Measure).Count | Should Not Be 0
+            ($scriptsModules | Measure-Object).Count | Should Not Be 0
         }
         It "Checking Invoke-ScriptAnalyzer exists." {
             { Get-Command Invoke-ScriptAnalyzer -ErrorAction Stop } | Should Not Throw
@@ -368,7 +368,7 @@ Describe 'Script Analyzer Rules' {
         Context "Checking $typeTesting – $($scriptModule) - conforms to Script Analyzer Rules" {
             forEach ($scriptAnalyzerRule in $scriptAnalyzerRules) {
                 It "Script Analyzer Rule $scriptAnalyzerRule" {
-                    (Invoke-ScriptAnalyzer -Path $scriptModule -IncludeRule $scriptAnalyzerRule | Measure).Count | Should Be 0
+                    (Invoke-ScriptAnalyzer -Path $scriptModule -IncludeRule $scriptAnalyzerRule | Measure-Object).Count | Should Be 0
                 }
             }
         }
