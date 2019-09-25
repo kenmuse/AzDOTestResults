@@ -243,8 +243,10 @@ function Invoke-WebRequestWithRetry {
         [ValidateNotNull()]
         [hashtable] $Parameters,
 
+        [ValidateRange(1, 100)]
         [int] $MaxRetries = 3,
 
+        [ValidateRange(0, 16000)]
         [int] $SleepTime = 1000
     )
 
@@ -496,10 +498,15 @@ function Copy-TestResultToTemp {
 function Copy-TestResult {
 <#
  .SYNOPSIS
- Retrieves test results from a specific Azure DevOps build.
+ Retrieves test results from a specific Azure DevOps build. If no build details are provided, the current
+ build environment is used based on the Azure DevOps environment variables.
 
  .DESCRIPTION
  Retrieves the test attachments from a build and places them in a specified location.
+
+ .PARAMETER OutputFolder
+ The location for storing the test results. Tests will be organized based on the expected
+ folder conventions for SonarQube and the contents of any downloaded TRX files.
 
  .PARAMETER ProjectUri
  The URI to the project root in Azure DevOps.
@@ -509,10 +516,6 @@ function Copy-TestResult {
 
  .PARAMETER BuildUri
  The VSTFS URI for the build whose test results should be downloaded.
-
- .PARAMETER OutputFolder
- The location for storing the test results. Tests will be organized based on the expected
- folder conventions for SonarQube and the contents of any downloaded TRX files.
 
  .PARAMETER TrxDependencyPath
  The format string to use for creating child folders for the TRX file dependencies. The string can utilize a replacement variable, $folder,
@@ -527,19 +530,16 @@ function Copy-TestResult {
     param(
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true)]
         [ValidateNotNullOrEmpty()]
-        [Uri] $ProjectUri,
-
-        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true)]
-        [ValidateNotNullOrEmpty()]
-        [string] $AccessToken,
-
-        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true)]
-        [ValidateNotNullOrEmpty()]
-        [string] $BuildUri,
-
-        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true)]
-        [ValidateNotNullOrEmpty()]
         [string] $OutputFolder,
+
+        [Parameter(ValueFromPipelineByPropertyName = $true)]
+        [Uri] $ProjectUri = $script:AzDOBuild.ProjectUri,
+
+        [Parameter(ValueFromPipelineByPropertyName = $true)]
+        [string] $AccessToken = $script:AzDOBuild.AccessToken,
+
+        [Parameter(ValueFromPipelineByPropertyName = $true)]
+        [string] $BuildUri = $script:AzDOBuild.BuildUri,
 
         [Parameter(ValueFromPipelineByPropertyName = $true)]
         [string] $TrxDependencyPath = '$trxFolder/In/$folder'
@@ -547,6 +547,16 @@ function Copy-TestResult {
 
     process {
         $ErrorActionPreference = "Stop"
+
+        # Ensure none of the parameters are $null or empty
+        $parameters = @('OutputFolder', 'ProjectUri', 'AccessToken', 'BuildUri')
+        foreach ($parameter in $parameters) {
+             $value = Get-Variable -Name $parameter -ErrorAction SilentlyContinue;
+             if ([string]::IsNullOrWhiteSpace($value.Value)){
+                throw [System.ArgumentNullException] $parameter
+            }
+        }
+
         $tests = Get-TestRunList -BuildUri $BuildUri -BaseUri $ProjectUri -AccessToken $AccessToken
         if (-Not (Test-Path $OutputFolder)) {
             Write-Verbose "Creating output folder: '$OutputFolder'"
@@ -597,4 +607,5 @@ function Copy-TestResult {
     }
 }
 
+Set-Variable -Name "AzDOBuild" -Value (Get-BuildEnvironment) -Scope script -Option Constant
 Export-ModuleMember -Function Copy-TestResult, Copy-TestResultToCommon, Copy-TestResultToTemp
