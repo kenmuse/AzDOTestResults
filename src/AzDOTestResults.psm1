@@ -569,39 +569,43 @@ function Copy-TestResult {
             $trxFiles = $content.TrxContent
             $otherFiles = $content.OtherContent
 
-            # Download TRX to get details about any related content locations
-            foreach($item in $trxFiles) {
-                Get-TestAttachment -AttachmentUri $item.url -OutputPath "$OutputFolder/$($item.fileName)" -AccessToken $AccessToken
-            }
+            if ($trxFiles.Length -gt 0) {
+                # Download TRX to get details about any related content locations
+                foreach($item in $trxFiles) {
+                    Get-TestAttachment -AttachmentUri $item.url -OutputPath "$OutputFolder/$($item.fileName)" -AccessToken $AccessToken
+                }
 
-            $trxNodes = Get-TrxContent -Files $trxFiles -OutputFolder $OutputFolder -TrxDependencyPath $TrxDependencyPath
-            # Create the required folders for child content
-            foreach($node in $trxNodes) {
-                if ($node) {
-                    $path = [Path]::GetDirectoryName($node)
-                    if ($path) {
-                        Write-Verbose "Creating output location: '$path'"
-                        [void](New-Item -ItemType Directory -Path $path -Force)
+                $trxNodes = Get-TrxContent -Files $trxFiles -OutputFolder $OutputFolder -TrxDependencyPath $TrxDependencyPath
+                # Create the required folders for child content
+                foreach($node in $trxNodes) {
+                    if ($node) {
+                        $path = [Path]::GetDirectoryName($node)
+                        if ($path) {
+                            Write-Verbose "Creating output location: '$path'"
+                            [void](New-Item -ItemType Directory -Path $path -Force)
+                        }
                     }
                 }
-            }
 
-            # Download the reamining content
-            $simpleFileList = $otherFiles | Select-Object -ExpandProperty 'fileName'
-            $childLocations = Group-ChildContent -TrxContentList $trxNodes -FileList $simpleFileList -OutputFolder $OutputFolder
-            foreach ($attachment in $otherFiles) {
-                Write-Verbose "Downloading $($attachment.fileName)"
-                $targetLocations = $childLocations[$attachment.FileName]
-                $target = $targetLocations[0]
-                Write-Verbose "Writing $($attachment.fileName) to $target"
-                Get-TestAttachment -AttachmentUri $attachment.url -OutputPath $target -AccessToken $AccessToken
+                # Download the reamining content
+                $simpleFileList = $otherFiles | Select-Object -ExpandProperty 'fileName'
+                $childLocations = Group-ChildContent -TrxContentList $trxNodes -FileList $simpleFileList -OutputFolder $OutputFolder
+                foreach ($attachment in $otherFiles) {
+                    Write-Verbose "Downloading $($attachment.fileName)"
+                    $targetLocations = $childLocations[$attachment.FileName]
+                    $target = $targetLocations[0]
+                    Write-Verbose "Writing $($attachment.fileName) to $target"
+                    Get-TestAttachment -AttachmentUri $attachment.url -OutputPath $target -AccessToken $AccessToken
 
-                if ($targetLocations.Length -gt 1){
-                    foreach($dest in $targetLocations | Select-Object -Skip 1 ){
-                        Write-Verbose "Writing $($attachment.fileName) to $dest"
-                        [void](Copy-Item $target -Destination $dest -Force)
+                    if ($targetLocations.Length -gt 1){
+                        foreach($dest in $targetLocations | Select-Object -Skip 1 ){
+                            Write-Verbose "Writing $($attachment.fileName) to $dest"
+                            [void](Copy-Item $target -Destination $dest -Force)
+                        }
                     }
                 }
+            } else {
+                Write-Warning "Skipping test run $($test.name) since it does not contain any .trx files"
             }
         }
     }
