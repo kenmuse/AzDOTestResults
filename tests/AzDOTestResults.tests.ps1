@@ -109,7 +109,27 @@ InModuleScope $moduleName {
 			It "Should identify non-TRX Content" {
 				$results.OtherContent.Length | Should Be 2
 			}
-		}
+        }
+        
+        Context "Given a request that contains a ZIP attachment" {
+            $samplesRoot = "$PSScriptRoot/samples/api"
+
+            $content = [string](Get-Content -Encoding UTF8 -ReadCount 0 -Path "$samplesRoot/NonVSTestRun.json")
+			$data = [PSCustomObject[]]((ConvertFrom-Json -InputObject $content).value)
+			$results = $data | Group-TestAttachmentList
+
+			It "Should not have null results" {
+				$results | Should Not Be $null
+			}
+
+			It "Should identify no TRX files" {
+				$results.TrxContent.Length | Should Be 0
+			}
+
+			It "Should identify non-TRX Content" {
+				$results.OtherContent.Length | Should Be 1
+			}
+        }
     }
 
     Describe "Get-TrxContent" {

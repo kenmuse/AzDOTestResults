@@ -1,0 +1,13 @@
+{
+    "count": 1,
+    "value": [
+        {
+            "createdDate": "2020-06-16T05:57:58.627Z",
+            "url": "urn://org/project/_apis/test/Runs/1582120/Attachments/1",
+            "id": 1,
+            "fileName": "TestResults_1582120.zip",
+            "comment": "",
+            "size": 33700
+        }
+    ]
+}
